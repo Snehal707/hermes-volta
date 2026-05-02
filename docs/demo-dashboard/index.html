@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hermes Volta Static Demo Dashboard</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020403;
+      --panel: #06110b;
+      --panel-2: #07170e;
+      --grid: rgba(74, 255, 128, 0.08);
+      --green: #66ff99;
+      --green-hot: #b7ffd0;
+      --green-dim: #2a9f5c;
+      --amber: #ffd166;
+      --red: #ff6b6b;
+      --line: rgba(102, 255, 153, 0.28);
+      --shadow: 0 0 18px rgba(102, 255, 153, 0.13), inset 0 0 34px rgba(102, 255, 153, 0.04);
+      --mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--green);
+      font-family: var(--ui);
+      background:
+        radial-gradient(circle at 50% -10%, rgba(102, 255, 153, 0.14), transparent 34rem),
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        var(--bg);
+      background-size: auto, 32px 32px, 32px 32px, auto;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.035) 0, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 4px);
+      opacity: 0.22;
+      z-index: 10;
+    }
+
+    a { color: var(--green-hot); }
+
+    .shell {
+      width: min(1680px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 30px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--green-hot);
+      font: 800 clamp(25px, 3vw, 44px) / 1 var(--mono);
+      letter-spacing: 0;
+      text-shadow: 0 0 12px rgba(102, 255, 153, 0.45);
+    }
+
+    .subhead {
+      margin: 8px 0 0;
+      max-width: 900px;
+      color: #9ee7b8;
+      font: 14px/1.5 var(--mono);
+    }
+
+    .status {
+      text-align: right;
+      font: 12px/1.45 var(--mono);
+      color: var(--green-hot);
+      white-space: nowrap;
+    }
+
+    .status span {
+      display: block;
+      color: var(--green-dim);
+    }
+
+    .history {
+      display: grid;
+      grid-template-columns: auto minmax(260px, 1fr);
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line);
+      background: rgba(6, 17, 11, 0.86);
+      box-shadow: var(--shadow);
+      padding: 12px;
+      font-family: var(--mono);
+    }
+
+    label {
+      color: var(--green-hot);
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    select {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid rgba(102, 255, 153, 0.35);
+      background: #030805;
+      color: var(--green-hot);
+      font: 13px var(--mono);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line);
+      background: rgba(6, 17, 11, 0.78);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .meta h2 {
+      margin: 0 0 8px;
+      color: var(--green-hot);
+      font: 700 22px/1.2 var(--mono);
+    }
+
+    .prompt, .summary {
+      margin: 0;
+      font: 13px/1.45 var(--mono);
+      color: #9ee7b8;
+    }
+
+    .summary { margin-top: 8px; color: var(--green-hot); }
+
+    .badges {
+      display: flex;
+      align-items: start;
+      justify-content: end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      background: rgba(102, 255, 153, 0.08);
+      color: var(--green-hot);
+      font: 700 12px var(--mono);
+      padding: 7px 9px;
+      text-transform: uppercase;
+    }
+
+    .badge.fail {
+      border-color: rgba(255, 107, 107, 0.6);
+      color: #ffb2b2;
+      background: rgba(255, 107, 107, 0.1);
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+      gap: 16px;
+    }
+
+    .panel, .report, .terminal {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(102, 255, 153, 0.045), transparent 42%), var(--panel);
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .panel.wide, .report, .terminal { grid-column: 1 / -1; }
+
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 40px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--green-hot);
+      background: rgba(0, 0, 0, 0.26);
+      font: 13px var(--mono);
+      text-transform: uppercase;
+    }
+
+    .title small {
+      color: var(--green-dim);
+      text-transform: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .scope {
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      background: radial-gradient(circle at center, rgba(102, 255, 153, 0.08), transparent 60%), var(--panel-2);
+      min-height: 220px;
+    }
+
+    .scope img {
+      width: 100%;
+      height: auto;
+      max-height: none;
+      object-fit: contain;
+      display: block;
+    }
+
+    .terminal-body {
+      margin: 0;
+      min-height: 150px;
+      padding: 14px;
+      color: var(--green-hot);
+      font: 13px/1.55 var(--mono);
+      white-space: pre-wrap;
+    }
+
+    .report pre {
+      margin: 0;
+      padding: 14px;
+      max-height: 440px;
+      overflow: auto;
+      color: #a9eebf;
+      font: 13px/1.5 var(--mono);
+      white-space: pre-wrap;
+    }
+
+    .artifacts {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .artifact {
+      border: 1px solid rgba(102, 255, 153, 0.25);
+      background: rgba(0,0,0,0.2);
+      padding: 10px;
+      text-decoration: none;
+      font: 12px/1.35 var(--mono);
+      min-width: 0;
+    }
+
+    .artifact strong {
+      display: block;
+      color: var(--green-hot);
+      margin-bottom: 4px;
+    }
+
+    .artifact span {
+      display: block;
+      color: var(--green-dim);
+      overflow-wrap: anywhere;
+    }
+
+    footer {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      background: rgba(6, 17, 11, 0.74);
+      color: var(--green-dim);
+      padding: 12px;
+      font: 12px/1.5 var(--mono);
+    }
+
+    @media (max-width: 900px) {
+      header, .meta { grid-template-columns: 1fr; display: grid; }
+      .status, .badges { text-align: left; justify-content: start; }
+      .history { grid-template-columns: 1fr; }
+      .panels { grid-template-columns: 1fr; }
+      .artifacts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100vw - 18px, 1680px); padding-top: 12px; }
+      .artifacts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <h1>HERMES VOLTA STATIC DASHBOARD</h1>
+        <p class="subhead">A backend-free snapshot for judges. Select saved Hermes Volta designs and inspect generated simulation, PCB, report, and artifact outputs directly from this repo.</p>
+      </div>
+      <div class="status">STATIC MODE<span>data.json + local assets</span></div>
+    </header>
+
+    <section class="history">
+      <label for="designSelect">Design history</label>
+      <select id="designSelect"></select>
+    </section>
+
+    <section class="meta">
+      <div>
+        <h2 id="designTitle"></h2>
+        <p class="prompt" id="designPrompt"></p>
+        <p class="summary" id="designSummary"></p>
+      </div>
+      <div class="badges">
+        <span class="badge" id="designBadge"></span>
+        <span class="badge" id="designType"></span>
+        <span class="badge" id="designStatus"></span>
+      </div>
+    </section>
+
+    <section class="panels">
+      <article class="panel">
+        <div class="title">Bode plot <small id="bodePath"></small></div>
+        <div class="scope"><img id="bodeImg" alt="Bode plot"></div>
+      </article>
+      <article class="panel">
+        <div class="title">PCB visual <small id="pcbPath"></small></div>
+        <div class="scope"><img id="pcbImg" alt="PCB visual"></div>
+      </article>
+      <article class="panel wide">
+        <div class="title">Transient validation <small id="transientPath"></small></div>
+        <div class="scope"><img id="transientImg" alt="Transient validation"></div>
+      </article>
+      <article class="panel wide">
+        <div class="title">Filter effect - VIN vs VOUT <small id="effectPath"></small></div>
+        <div class="scope"><img id="effectImg" alt="Filter effect VIN vs VOUT"></div>
+      </article>
+      <article class="terminal">
+        <div class="title">Hermes stream <small>static replay</small></div>
+        <pre class="terminal-body" id="stream"></pre>
+      </article>
+      <article class="report">
+        <div class="title">Cutoff report <small id="reportPath"></small></div>
+        <pre id="reportText"></pre>
+      </article>
+      <article class="report">
+        <div class="title">Artifacts list <small>relative links only</small></div>
+        <div class="artifacts" id="artifacts"></div>
+      </article>
+    </section>
+
+    <footer>
+      This static dashboard does not call <code>dashboard/api.py</code>, Telegram, Firecrawl, local memory, or any secret-bearing config. It uses only relative paths under <code>docs/demo-dashboard/</code>.
+    </footer>
+  </main>
+
+  <script>
+    const FALLBACK_DATA = {
+      generated: "2026-05-03",
+      source: "Embedded fallback for direct file open. data.json contains the same static design index.",
+      designs: [
+        {
+          id: "rc-lowpass-handdrawn-1p6khz",
+          title: "RC_LOWPASS 1.6 kHz from hand drawn schematic",
+          circuitType: "RC_LOWPASS",
+          prompt: "simulate this hand-drawn RC low-pass schematic",
+          summary: "R=1 kohm, C=100 nF, target fc=1591.55 Hz, actual fc=1591.49 Hz, PASS.",
+          badge: "HAND DRAWN",
+          status: "PASS",
+          report: `Hermes Volta Cutoff Report
+============================
+Circuit type: RC_LOWPASS
+Date: 2026-05-02T19:13:01
+Description: Hand-drawn schematic: R=1k C=100nF RC low-pass filter
+
+Component Values
+  R: 1 kohm
+  C: 100 nF
+  Supply: 5 V
+
+Cutoff Frequency
+  Target fc: 1591.55 Hz
+  Theory fc: 1591.55 Hz
+  Actual fc: 1591.49 Hz
+  Error: 0.004%
+  Result: PASS`
+        },
+        {
+          id: "rc-highpass-500hz",
+          title: "RC_HIGHPASS 500 Hz",
+          circuitType: "RC_HIGHPASS",
+          prompt: "design a 500Hz high-pass filter at 3.3 volts",
+          summary: "R=3.3 kohm, C=100 nF, target fc=500 Hz, actual fc=482.316 Hz, PASS.",
+          badge: "TELEGRAM VOICE",
+          status: "PASS",
+          report: `Hermes Volta Cutoff Report
+============================
+Circuit type: RC_HIGHPASS
+Date: 2026-05-02T17:37:45
+Description: 500Hz RC high-pass filter @ 3.3V
+
+Component Values
+  R: 3.3 kohm
+  C: 100 nF
+  Supply: 3.3 V
+
+Cutoff Frequency
+  Target fc: 500 Hz
+  Theory fc: 482.288 Hz
+  Actual fc: 482.316 Hz
+  Error: 3.537%
+  Result: PASS`
+        },
+        {
+          id: "rlc-bandpass-example",
+          title: "RLC_BANDPASS example",
+          circuitType: "RLC_BANDPASS",
+          prompt: "Smoke test RLC_BANDPASS",
+          summary: "R=50 ohm, C=100 nF, L=1 mH, actual f0=15848.9 Hz. This snapshot intentionally shows the report FAIL against a 5 kHz target.",
+          badge: "RLC",
+          status: "FAIL",
+          report: `Hermes Volta Bandpass Report
+============================
+Circuit type: RLC_BANDPASS
+Date: 2026-05-03T04:19:50
+Description: Smoke test RLC_BANDPASS
+
+Component Values
+  R: 50 ohm
+  C: 100 nF
+  L: 1 mH
+  Supply: 5 V
+
+Bandpass Center Frequency
+  Target f0: 5000 Hz
+  Theory f0: 15915.5 Hz
+  Actual f0: 15848.9 Hz
+  Error: 216.979%
+  Result: FAIL`
+        },
+        {
+          id: "rlc-notch-example",
+          title: "RLC_NOTCH example",
+          circuitType: "RLC_NOTCH",
+          prompt: "60Hz power line hum notch filter",
+          summary: "R=1 ohm, C=1 mF, L=6.8 mH, target f0=60 Hz, actual f0=61.6595 Hz, PASS.",
+          badge: "NOTCH",
+          status: "PASS",
+          report: `Hermes Volta Cutoff Report
+============================
+Circuit type: RLC_NOTCH
+Date: 2026-05-02T15:50:43
+Description: 60Hz power line hum notch filter
+
+Component Values
+  R: 1 ohm
+  C: 1 mF
+  L: 6.8 mH
+  Supply: 5 V
+
+Cutoff / Center Frequency
+  Target fc: 60 Hz
+  Theory fc: 61.0331 Hz
+  Actual fc: 61.6595 Hz
+  Error: 2.766%
+  Result: PASS`
+        },
+        {
+          id: "ecg-antialias-100hz",
+          title: "ECG anti aliasing 100 Hz",
+          circuitType: "RC_LOWPASS",
+          prompt: "I'm building an ECG heart monitor and need to filter muscle noise",
+          summary: "R=16 kohm, C=100 nF, target fc=100 Hz, actual fc=99.4773 Hz, PASS.",
+          badge: "WEB SEARCH",
+          status: "PASS",
+          report: `Hermes Volta Cutoff Report
+============================
+Circuit type: RC_LOWPASS
+Date: 2026-05-02T18:12:15
+Description: 100Hz RC low-pass anti-aliasing filter for ECG heart monitor muscle noise rejection @ 5V
+
+Component Values
+  R: 16 kohm
+  C: 100 nF
+  Supply: 5 V
+
+Cutoff Frequency
+  Target fc: 100 Hz
+  Theory fc: 99.4718 Hz
+  Actual fc: 99.4773 Hz
+  Error: 0.523%
+  Result: PASS`
+        }
+      ]
+    };
+
+    const artifactDefs = [
+      ["Bode plot", "frequency_response.png"],
+      ["Transient validation", "waveform.png"],
+      ["Filter effect VIN vs VOUT", "compare_plot.png"],
+      ["PCB visual", "pcb_view.png"],
+      ["Cutoff report", "cutoff_report.txt"],
+      ["KiCad netlist", "circuit.net"],
+      ["Starter PCB", "circuit.kicad_pcb"],
+      ["Gerbers zip", "gerbers.zip"]
+    ];
+
+    const els = {
+      select: document.getElementById("designSelect"),
+      title: document.getElementById("designTitle"),
+      prompt: document.getElementById("designPrompt"),
+      summary: document.getElementById("designSummary"),
+      badge: document.getElementById("designBadge"),
+      type: document.getElementById("designType"),
+      status: document.getElementById("designStatus"),
+      bode: document.getElementById("bodeImg"),
+      transient: document.getElementById("transientImg"),
+      pcb: document.getElementById("pcbImg"),
+      effect: document.getElementById("effectImg"),
+      bodePath: document.getElementById("bodePath"),
+      transientPath: document.getElementById("transientPath"),
+      pcbPath: document.getElementById("pcbPath"),
+      effectPath: document.getElementById("effectPath"),
+      reportPath: document.getElementById("reportPath"),
+      report: document.getElementById("reportText"),
+      stream: document.getElementById("stream"),
+      artifacts: document.getElementById("artifacts")
+    };
+
+    function withPaths(design) {
+      const base = `assets/${design.id}`;
+      return {
+        ...design,
+        images: design.images || {
+          bode: `${base}/frequency_response.png`,
+          transient: `${base}/waveform.png`,
+          pcb: `${base}/pcb_view.png`,
+          effect: `${base}/compare_plot.png`
+        },
+        reportPath: design.reportPath || `${base}/cutoff_report.txt`,
+        artifacts: artifactDefs.map(([label, file]) => ({ label, path: `${base}/${file}` }))
+      };
+    }
+
+    async function loadData() {
+      try {
+        const response = await fetch("data.json", { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return { ...data, designs: data.designs.map(withPaths), mode: "data.json" };
+      } catch (_) {
+        return { ...FALLBACK_DATA, designs: FALLBACK_DATA.designs.map(withPaths), mode: "embedded fallback" };
+      }
+    }
+
+    async function loadReport(design) {
+      if (design.report) return design.report;
+      try {
+        const response = await fetch(design.reportPath, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.text();
+      } catch (_) {
+        return "Cutoff report file is available at " + design.reportPath + ". Browser file-mode fetch blocked inline report loading, so open the linked report from the artifacts list.";
+      }
+    }
+
+    async function render(design) {
+      els.title.textContent = design.title;
+      els.prompt.textContent = "> " + design.prompt;
+      els.summary.textContent = design.summary;
+      els.badge.textContent = design.badge;
+      els.type.textContent = design.circuitType;
+      els.status.textContent = design.status;
+      els.status.classList.toggle("fail", design.status !== "PASS");
+
+      els.bode.src = design.images.bode;
+      els.transient.src = design.images.transient;
+      els.pcb.src = design.images.pcb;
+      els.effect.src = design.images.effect;
+      els.bodePath.textContent = design.images.bode;
+      els.transientPath.textContent = design.images.transient;
+      els.pcbPath.textContent = design.images.pcb;
+      els.effectPath.textContent = design.images.effect;
+      els.reportPath.textContent = design.reportPath;
+      els.report.textContent = await loadReport(design);
+
+      els.stream.textContent = [
+        "[Volta] Loaded static design snapshot",
+        `[Volta] Circuit type: ${design.circuitType}`,
+        "[Volta] Displaying Bode plot, transient validation, PCB visual, and filter effect",
+        `[Volta] Report: ${design.reportPath}`,
+        "[Volta] Static mode complete"
+      ].join("\n");
+
+      els.artifacts.replaceChildren(...design.artifacts.map(item => {
+        const a = document.createElement("a");
+        a.className = "artifact";
+        a.href = item.path;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.innerHTML = `<strong>${item.label}</strong><span>${item.path}</span>`;
+        return a;
+      }));
+    }
+
+    loadData().then(data => {
+      els.select.replaceChildren(...data.designs.map((design, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = design.title;
+        return option;
+      }));
+      els.select.addEventListener("change", () => render(data.designs[Number(els.select.value)]));
+      render(data.designs[0]);
+    });
+  </script>
+</body>
+</html>

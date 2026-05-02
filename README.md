@@ -56,6 +56,7 @@ Public demo docs:
 - [Hackathon plan](docs/HACKATHON.md)
 - [Demo script](docs/DEMO_SCRIPT.md)
 - [Demo artifact gallery](docs/DEMO_ARTIFACTS.md)
+- [Static demo dashboard](docs/demo-dashboard/index.html)
 - [Volta persona](docs/VOLTA_PERSONA.md)
 - [Agent context](docs/AGENT_CONTEXT.md)
 
@@ -174,6 +175,8 @@ Generated boards are starting points for engineering review, not production-appr
 docs/             Architecture, hackathon, and demo notes
 docs/demo_artifacts/
                  Curated demo images for GitHub browsing
+docs/demo-dashboard/
+                 Static backend-free dashboard snapshot
 dashboard/        FastAPI dashboard and live artifact UI
 sim/              Simulation, netlist, PCB export, report, compare plots
 skills/volta/     Hermes Agent skill and references
@@ -196,6 +199,14 @@ Open:
 ```text
 http://localhost:8765
 ```
+
+Static dashboard snapshot for judges:
+
+```text
+docs/demo-dashboard/index.html
+```
+
+Open that file directly in a browser to inspect saved design history without running the backend.
 
 For a fresh install on another machine:
 

@@ -1,0 +1,33 @@
+Hermes Volta Cutoff Report
+============================
+Circuit type: RC_LOWPASS
+Date: 2026-05-02T18:12:15
+Description: 100Hz RC low-pass anti-aliasing filter for ECG heart monitor muscle noise rejection @ 5V
+
+Component Values
+  R: 16 kohm
+  C: 100 nF
+  Supply: 5 V
+
+Cutoff Frequency
+  Target fc: 100 Hz
+  Theory fc: 99.4718 Hz
+  Actual fc: 99.4773 Hz
+  Error: 0.523%
+  Result: PASS
+
+BOM / JLCPCB Search Strings
+  Ref | Value | Footprint | Search
+  R1 | 16 kohm | Resistor_SMD:R_0402 | JLCPCB 16 kohm 0402 resistor
+  C1 | 100 nF | Capacitor_SMD:C_0402 | JLCPCB 100 nF 0402 capacitor
+
+Output Files
+  assets/ecg-antialias-100hz/frequency_response.png
+  assets/ecg-antialias-100hz/waveform.png
+  assets/ecg-antialias-100hz/circuit.net
+  assets/ecg-antialias-100hz/pcb_view.png
+  assets/ecg-antialias-100hz/gerbers.zip
+  assets/ecg-antialias-100hz/cutoff_report.txt
+
+Hermes Memory Entry
+  Hermes Volta saved RC_LOWPASS: R=16000.0, C=1e-07, L=None, target_fc=100 Hz, actual_fc=99.4773 Hz, status=PASS.

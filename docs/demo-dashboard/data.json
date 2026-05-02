@@ -1,0 +1,86 @@
+{
+  "generated": "2026-05-03",
+  "source": "Static Hermes Volta demo snapshot. No backend, tokens, local absolute paths, Telegram configuration, or private files included.",
+  "designs": [
+    {
+      "id": "rc-lowpass-handdrawn-1p6khz",
+      "title": "RC_LOWPASS 1.6 kHz from hand drawn schematic",
+      "circuitType": "RC_LOWPASS",
+      "prompt": "simulate this hand-drawn RC low-pass schematic",
+      "summary": "R=1 kohm, C=100 nF, target fc=1591.55 Hz, actual fc=1591.49 Hz, PASS.",
+      "badge": "HAND DRAWN",
+      "status": "PASS",
+      "images": {
+        "bode": "assets/rc-lowpass-handdrawn-1p6khz/frequency_response.png",
+        "transient": "assets/rc-lowpass-handdrawn-1p6khz/waveform.png",
+        "pcb": "assets/rc-lowpass-handdrawn-1p6khz/pcb_view.png",
+        "effect": "assets/rc-lowpass-handdrawn-1p6khz/compare_plot.png"
+      },
+      "reportPath": "assets/rc-lowpass-handdrawn-1p6khz/cutoff_report.txt"
+    },
+    {
+      "id": "rc-highpass-500hz",
+      "title": "RC_HIGHPASS 500 Hz",
+      "circuitType": "RC_HIGHPASS",
+      "prompt": "design a 500Hz high-pass filter at 3.3 volts",
+      "summary": "R=3.3 kohm, C=100 nF, target fc=500 Hz, actual fc=482.316 Hz, PASS.",
+      "badge": "TELEGRAM VOICE",
+      "status": "PASS",
+      "images": {
+        "bode": "assets/rc-highpass-500hz/frequency_response.png",
+        "transient": "assets/rc-highpass-500hz/waveform.png",
+        "pcb": "assets/rc-highpass-500hz/pcb_view.png",
+        "effect": "assets/rc-highpass-500hz/compare_plot.png"
+      },
+      "reportPath": "assets/rc-highpass-500hz/cutoff_report.txt"
+    },
+    {
+      "id": "rlc-bandpass-example",
+      "title": "RLC_BANDPASS example",
+      "circuitType": "RLC_BANDPASS",
+      "prompt": "Smoke test RLC_BANDPASS",
+      "summary": "R=50 ohm, C=100 nF, L=1 mH, actual f0=15848.9 Hz. This snapshot intentionally shows the report FAIL against a 5 kHz target.",
+      "badge": "RLC",
+      "status": "FAIL",
+      "images": {
+        "bode": "assets/rlc-bandpass-example/frequency_response.png",
+        "transient": "assets/rlc-bandpass-example/waveform.png",
+        "pcb": "assets/rlc-bandpass-example/pcb_view.png",
+        "effect": "assets/rlc-bandpass-example/compare_plot.png"
+      },
+      "reportPath": "assets/rlc-bandpass-example/cutoff_report.txt"
+    },
+    {
+      "id": "rlc-notch-example",
+      "title": "RLC_NOTCH example",
+      "circuitType": "RLC_NOTCH",
+      "prompt": "60Hz power line hum notch filter",
+      "summary": "R=1 ohm, C=1 mF, L=6.8 mH, target f0=60 Hz, actual f0=61.6595 Hz, PASS.",
+      "badge": "NOTCH",
+      "status": "PASS",
+      "images": {
+        "bode": "assets/rlc-notch-example/frequency_response.png",
+        "transient": "assets/rlc-notch-example/waveform.png",
+        "pcb": "assets/rlc-notch-example/pcb_view.png",
+        "effect": "assets/rlc-notch-example/compare_plot.png"
+      },
+      "reportPath": "assets/rlc-notch-example/cutoff_report.txt"
+    },
+    {
+      "id": "ecg-antialias-100hz",
+      "title": "ECG anti aliasing 100 Hz",
+      "circuitType": "RC_LOWPASS",
+      "prompt": "I'm building an ECG heart monitor and need to filter muscle noise",
+      "summary": "R=16 kohm, C=100 nF, target fc=100 Hz, actual fc=99.4773 Hz, PASS.",
+      "badge": "WEB SEARCH",
+      "status": "PASS",
+      "images": {
+        "bode": "assets/ecg-antialias-100hz/frequency_response.png",
+        "transient": "assets/ecg-antialias-100hz/waveform.png",
+        "pcb": "assets/ecg-antialias-100hz/pcb_view.png",
+        "effect": "assets/ecg-antialias-100hz/compare_plot.png"
+      },
+      "reportPath": "assets/ecg-antialias-100hz/cutoff_report.txt"
+    }
+  ]
+}
