@@ -12,6 +12,12 @@ Hermes Volta turns a plain-English filter request into computed component values
 
 Watch the hackathon demo: https://youtu.be/Qx1U6dPjKfs
 
+## Interactive Demo Dashboard
+
+https://Snehal707.github.io/hermes-volta/demo-dashboard/
+
+Judges can open the hosted GitHub Pages dashboard to browse saved design history without running the backend.
+
 > Demo prompt: `design a 2kHz high-pass filter for a microphone at 5V`
 
 ## Architecture
@@ -190,8 +196,8 @@ outputs/          Generated artifacts, ignored by git
 This project was developed under WSL2. For the checked-in project path, use the package-complete venv:
 
 ```bash
-cd /mnt/c/Users/ASUS/HermesVolta
-/mnt/c/Users/ASUS/HermesVolta/hermes-agent/.venv/bin/python3 dashboard/api.py
+cd hermes-volta
+./hermes-agent/.venv/bin/python3 dashboard/api.py
 ```
 
 Open:
@@ -220,7 +226,7 @@ bash skills/volta/scripts/install_deps.sh
 Use the Hermes Volta venv for simulation scripts:
 
 ```bash
-/mnt/c/Users/ASUS/HermesVolta/hermes-agent/.venv/bin/python3 - <<'PY'
+./hermes-agent/.venv/bin/python3 - <<'PY'
 from sim.faraday_pipeline import run
 
 result = run(
@@ -241,19 +247,19 @@ PY
 E24 resistor sweep:
 
 ```bash
-/mnt/c/Users/ASUS/HermesVolta/hermes-agent/.venv/bin/python3 sim/sweep_optimizer.py --fc 1000 --C 1e-7
+./hermes-agent/.venv/bin/python3 sim/sweep_optimizer.py --fc 1000 --C 1e-7
 ```
 
 Monte Carlo tolerance check:
 
 ```bash
-/mnt/c/Users/ASUS/HermesVolta/hermes-agent/.venv/bin/python3 sim/monte_carlo.py --R 1600 --C 1e-7 --fc 1000 --n 1000
+./hermes-agent/.venv/bin/python3 sim/monte_carlo.py --R 1600 --C 1e-7 --fc 1000 --n 1000
 ```
 
 Full smoke test:
 
 ```bash
-/mnt/c/Users/ASUS/HermesVolta/hermes-agent/.venv/bin/python3 tests/smoke_test.py
+./hermes-agent/.venv/bin/python3 tests/smoke_test.py
 ```
 
 ## Dashboard API
