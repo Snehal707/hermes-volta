@@ -153,7 +153,7 @@ I'll design a 10 kHz low-pass anti-alias filter at 9 V to preserve the full audi
 6. In Telegram delivery, include the reasoning:
 
 ```python
-send_message(platform="telegram", message="?? Why this design: {explanation}")
+send_message(platform="telegram", message="Why this design: {explanation}")
 ```
 
 Autonomous defaults should be conservative:
@@ -228,9 +228,9 @@ Check:
 
 When the target matters, launch three subagents:
 
-- Subagent A: run `python3 sim/sweep_optimizer.py --fc <target> --C <capacitance>` and report the top E24 resistor candidates.
+- Subagent A: run `$PYTHON sim/sweep_optimizer.py --fc <target> --C <capacitance>` and report the top E24 resistor candidates.
 - Subagent B: inspect the Bode plot/report for pass/fail and physical plausibility.
-- Subagent C: run `python3 sim/monte_carlo.py --R <resistance> --C <capacitance> --fc <target> --n 1000` and report tolerance robustness.
+- Subagent C: run `$PYTHON sim/monte_carlo.py --R <resistance> --C <capacitance> --fc <target> --n 1000` and report tolerance robustness.
 
 Merge the results into a final recommendation.
 
@@ -291,40 +291,40 @@ CRITICAL: Do not pass literal strings like `"{output_dir}/frequency_response.png
 ```python
 send_message(
     platform="telegram",
-    message="? Volta Design Complete: {circuit_type} {fc}Hz\nR={R} C={C}\nActual fc={actual_fc}Hz\nError={error}%\nStatus=PASS"
+    message="Volta Design Complete: {circuit_type} {fc}Hz\nR={R} C={C}\nActual fc={actual_fc}Hz\nError={error}%\nStatus=PASS"
 )
 ```
 
 2. Send Bode plot:
 ```python
-send_message(platform="telegram", file=str(output_dir / "frequency_response.png"), message="?? Bode Plot")
+send_message(platform="telegram", file=str(output_dir / "frequency_response.png"), message="Bode Plot")
 ```
 
 3. Send waveform:
 ```python
-send_message(platform="telegram", file=str(output_dir / "waveform.png"), message="? Transient Waveform")
+send_message(platform="telegram", file=str(output_dir / "waveform.png"), message="Transient Waveform")
 ```
 
 4. Send PCB view:
 ```python
-send_message(platform="telegram", file=str(output_dir / "pcb_view.png"), message="?? PCB Layout")
+send_message(platform="telegram", file=str(output_dir / "pcb_view.png"), message="PCB Layout")
 ```
 
 5. Send report:
 ```python
-send_message(platform="telegram", file=str(output_dir / "cutoff_report.txt"), message="?? Design Report")
+send_message(platform="telegram", file=str(output_dir / "cutoff_report.txt"), message="Design Report")
 ```
 
 6. Send Gerbers:
 ```python
-send_message(platform="telegram", file=str(output_dir / "gerbers.zip"), message="?? Gerbers")
+send_message(platform="telegram", file=str(output_dir / "gerbers.zip"), message="Gerbers")
 ```
 
 7. Send VIN vs VOUT annotated comparison plot:
 ```python
 send_message(platform="telegram",
   file=str(output_dir / "compare_plot.png"),
-  message="?? Filter Effect — VIN vs VOUT | Orange=noisy input | Green=filtered output (real simulation)")
+  message="Filter Effect - VIN vs VOUT | Orange=noisy input | Green=filtered output (real simulation)")
 ```
 
 MANDATORY: This must be sent after every design. Never skip it.
@@ -357,7 +357,7 @@ Send this advice as a final Telegram message after the 6 standard messages:
 
 ```python
 send_message(platform="telegram", 
-  message="?? Engineering Note: {relevant_advice}")
+  message="Engineering Note: {relevant_advice}")
 ```
 
 ## Event Hooks
@@ -426,7 +426,7 @@ Trajectories are saved to `outputs/trajectories/{session_id}.json` with:
 - Verification response
 - Metadata including circuit type, target fc, actual fc, error percentage, tools used, skill, and timestamp
 
-Run: `python3 tools/submit_trajectory.py` to submit trajectories.
+Run: `$PYTHON tools/submit_trajectory.py` to submit trajectories.
 
 ## IDE Integration (ACP)
 
@@ -616,7 +616,7 @@ After generating:
 ```python
 send_message(platform="telegram",
   file=str(output_dir / "product_render.png"),
-  message="?? PCB Product Render — {circuit_type} {fc}Hz")
+  message="PCB Product Render - {circuit_type} {fc}Hz")
 ```
 
 Also add `image_gen` to the standard design flow as optional:
@@ -712,7 +712,8 @@ cron:
   schedule: "0 9 * * MON"
   task: |
     cd ~/hermes-volta
-    python3 tools/check_bom_availability.py --library JLCPCB --reports outputs
+    PYTHON=/mnt/c/Users/ASUS/HermesVolta/hermes-agent/.venv/bin/python3
+    $PYTHON tools/check_bom_prices.py
     hermes telegram send "Volta weekly BOM check complete. Review outputs/bom_status.txt"
 ```
 
@@ -772,7 +773,8 @@ bash skills/volta/scripts/install_deps.sh
 Then run a smoke test:
 
 ```bash
-python3 - <<'PY'
+PYTHON=/mnt/c/Users/ASUS/HermesVolta/hermes-agent/.venv/bin/python3
+$PYTHON - <<'PY'
 from sim.faraday_pipeline import run
 print(run("RC_LOWPASS", R=1600, C=1e-7, supply_v=5.0, L=1e-2, fc=1000, description="smoke test"))
 PY

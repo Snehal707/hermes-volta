@@ -51,6 +51,14 @@ flowchart LR
 
 More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
+Public demo docs:
+
+- [Hackathon plan](docs/HACKATHON.md)
+- [Demo script](docs/DEMO_SCRIPT.md)
+- [Demo artifact gallery](docs/DEMO_ARTIFACTS.md)
+- [Volta persona](docs/VOLTA_PERSONA.md)
+- [Agent context](docs/AGENT_CONTEXT.md)
+
 ### Where Hermes Agent Is
 
 `hermes-agent/` is the local Hermes Agent runtime checkout used during development and demos. It is intentionally ignored by git because it is a large external runtime/dependency, not Volta source code. The repo integrates with Hermes Agent through:
@@ -163,6 +171,9 @@ Generated boards are starting points for engineering review, not production-appr
 ## Repository Layout
 
 ```text
+docs/             Architecture, hackathon, and demo notes
+docs/demo_artifacts/
+                 Curated demo images for GitHub browsing
 dashboard/        FastAPI dashboard and live artifact UI
 sim/              Simulation, netlist, PCB export, report, compare plots
 skills/volta/     Hermes Agent skill and references

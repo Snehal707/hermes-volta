@@ -72,9 +72,9 @@ Next steps:
   1. Activate the environment:
      source .venv/bin/activate
   2. Verify Ngspice/PySpice:
-     python3 -c "from PySpice.Spice.Netlist import Circuit; print('PySpice OK')"
+     python -c "from PySpice.Spice.Netlist import Circuit; print('PySpice OK')"
   3. Run a Volta pipeline smoke test:
-     python3 - <<'PY'
+     python - <<'PY'
 from sim.faraday_pipeline import run
 print(run("RC_LOWPASS", R=1600, C=1e-7, supply_v=5.0, L=1e-2, fc=1000, description="install smoke test"))
 PY

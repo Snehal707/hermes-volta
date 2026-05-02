@@ -31,11 +31,11 @@ Volta turns plain-English analog circuit requests into computed values, PySpice/
 
 | Circuit type | Purpose | Equation |
 | --- | --- | --- |
-| `RC_LOWPASS` | Attenuate frequencies above cutoff | `fc = 1/(2πRC)` |
-| `RC_HIGHPASS` | Attenuate frequencies below cutoff | `fc = 1/(2πRC)` |
-| `RLC_BANDPASS` | Pass a resonant band | `fc = 1/(2π√LC)` |
-| `RLC_NOTCH` | Reject a resonant band | `fc = 1/(2π√LC)` |
-| `RL_LOWPASS` | Inductive low-pass/load smoothing | `fc = R/(2πL)` |
+| `RC_LOWPASS` | Attenuate frequencies above cutoff | `fc = 1/(2*pi*R*C)` |
+| `RC_HIGHPASS` | Attenuate frequencies below cutoff | `fc = 1/(2*pi*R*C)` |
+| `RLC_BANDPASS` | Pass a resonant band | `f0 = 1/(2*pi*sqrt(L*C))` |
+| `RLC_NOTCH` | Reject a resonant band | `f0 = 1/(2*pi*sqrt(L*C))` |
+| `RL_LOWPASS` | Inductive low-pass/load smoothing | `fc = R/(2*pi*L)` |
 
 ## Procedure
 
@@ -95,39 +95,39 @@ Build real file paths with `output_dir / "filename"` or an f-string before sendi
 
 1. Summary:
 ```python
-send_message(platform="telegram", message="⚡ Volta Design Complete: {circuit_type} {fc}Hz\nR={R} C={C}\nActual fc={actual_fc}Hz\nError={error}%\nStatus=PASS")
+send_message(platform="telegram", message="Volta Design Complete: {circuit_type} {fc}Hz\nR={R} C={C}\nActual fc={actual_fc}Hz\nError={error}%\nStatus=PASS")
 ```
 
 2. Bode plot:
 ```python
-send_message(platform="telegram", file=str(output_dir / "frequency_response.png"), message="📊 Bode Plot")
+send_message(platform="telegram", file=str(output_dir / "frequency_response.png"), message="Bode Plot")
 ```
 
 3. Transient waveform:
 ```python
-send_message(platform="telegram", file=str(output_dir / "waveform.png"), message="〰 Transient Waveform")
+send_message(platform="telegram", file=str(output_dir / "waveform.png"), message="Transient Waveform")
 ```
 
 4. PCB view:
 ```python
-send_message(platform="telegram", file=str(output_dir / "pcb_view.png"), message="🔌 PCB Layout")
+send_message(platform="telegram", file=str(output_dir / "pcb_view.png"), message="PCB Layout")
 ```
 
 5. Report:
 ```python
-send_message(platform="telegram", file=str(output_dir / "cutoff_report.txt"), message="📄 Design Report")
+send_message(platform="telegram", file=str(output_dir / "cutoff_report.txt"), message="Design Report")
 ```
 
 6. Gerbers:
 ```python
-send_message(platform="telegram", file=str(output_dir / "gerbers.zip"), message="📦 Gerbers")
+send_message(platform="telegram", file=str(output_dir / "gerbers.zip"), message="Gerbers")
 ```
 
 7. VIN vs VOUT comparison:
 ```python
 send_message(platform="telegram",
   file=str(output_dir / "compare_plot.png"),
-  message="🔬 Filter Effect — VIN vs VOUT | Orange=noisy input | Green=filtered output (real simulation)")
+  message="Filter Effect - VIN vs VOUT | Orange=noisy input | Green=filtered output (real simulation)")
 ```
 
 MANDATORY: Send the compare plot after every design. Never skip it. If the design was run through terminal instead of `execute_code`, still call `send_message` afterward with the returned `output_dir`.
@@ -135,12 +135,12 @@ MANDATORY: Send the compare plot after every design. Never skip it. If the desig
 For Autonomous Design Mode, also send:
 
 ```python
-send_message(platform="telegram", message="💡 Why this design: {explanation}")
+send_message(platform="telegram", message="Why this design: {explanation}")
 ```
 
 8. Engineering note:
 ```python
-send_message(platform="telegram", message="🧠 Engineering note: {engineering_note}")
+send_message(platform="telegram", message="Engineering note: {engineering_note}")
 ```
 
 MANDATORY: The engineering note must be sent after every design and must be the last Telegram message. If no `engineering_note` variable exists, summarize the key engineering proof in one sentence using the circuit type, target fc, actual fc, error percentage, and why the filter choice makes sense.

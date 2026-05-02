@@ -5,7 +5,7 @@ Parses MEMORY.md for verified designs, extracts unique parts,
 outputs JLCPCB/LCSC search URLs, and tracks a baseline price DB.
 
 Usage:
-    python3 tools/check_bom_prices.py
+    python tools/check_bom_prices.py
 
 Output: JSON to stdout, updates outputs/bom_price_db.json
 """
