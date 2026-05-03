@@ -12,6 +12,43 @@ Hermes Volta turns a plain-English filter request into computed component values
 
 Watch the hackathon demo: https://youtu.be/Qx1U6dPjKfs
 
+## Screenshots
+
+### Vision — Hand-Drawn Schematic to Simulation
+
+User sends a photo of a hand-drawn RC circuit on paper to Telegram.
+Volta recognizes the topology and values using vision analysis:
+"Schematic recognized: RC_LOWPASS — series R (1 kΩ), shunt C (100 nF)"
+Memory match found: fc = 1.59 kHz, error = 0.004% — essentially perfect.
+Delivers full simulation artifacts back to Telegram automatically.
+
+![Vision Telegram](docs/screenshots/vision_telegram.jpg)
+
+### Bode Plot — fc=1591Hz, R=1kΩ, C=100nF
+
+Theory fc = 1591.55 Hz | Actual fc = 1591.49 Hz | Error = 0.004%
+
+![Bode Plot](docs/screenshots/bode_plot.png)
+
+### Transient Validation — Real Simulation Proof
+
+159Hz signal passes (VOUT/VIN = 1.00x) | 16kHz signal rejected (VOUT/VIN = 0.10x)
+
+![Transient Validation](docs/screenshots/transient_validation.png)
+
+### PCB Layout — JLCPCB Ready
+
+fc = 1591Hz | R1 = 1kΩ | C1 = 100nF | 0402 SMD
+
+![PCB Layout](docs/screenshots/pcb_layout.png)
+
+### Filter Effect — VIN vs VOUT vs Noise Blocked
+
+Top: noisy input | Middle: filtered output (real PySpice simulation) |
+Bottom: high-frequency noise blocked by filter
+
+![Filter Effect](docs/screenshots/filter_effect.png)
+
 ## Architecture
 
 Hermes Volta runs on top of Hermes Agent. Hermes Agent is the runtime/orchestrator; this repository contains the Volta skill, simulation pipeline, dashboard, tests, and helper tools.
