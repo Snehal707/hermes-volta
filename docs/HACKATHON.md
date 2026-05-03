@@ -12,7 +12,7 @@ Watch: https://youtu.be/Qx1U6dPjKfs
 
 Artifact gallery: [DEMO_ARTIFACTS.md](DEMO_ARTIFACTS.md)
 
-Static dashboard snapshot: [demo-dashboard/index.html](demo-dashboard/index.html)
+Live dashboard runs locally via `dashboard/api.py` ([README.md](../README.md#quick-start) Quick Start).
 
 ## One-Line Pitch
 

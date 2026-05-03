@@ -12,20 +12,6 @@ Hermes Volta turns a plain-English filter request into computed component values
 
 Watch the hackathon demo: https://youtu.be/Qx1U6dPjKfs
 
-## Screenshots
-
-### Dashboard
-
-![Hermes Volta dashboard screenshot](docs/screenshots/dashboard.png)
-
-### Telegram Delivery
-
-![Hermes Volta Telegram delivery screenshot](docs/screenshots/telegram-delivery.png)
-
-### VOLTA Banner CLI
-
-![Hermes Volta CLI banner screenshot](docs/screenshots/volta-cli-banner.png)
-
 ## Architecture
 
 Hermes Volta runs on top of Hermes Agent. Hermes Agent is the runtime/orchestrator; this repository contains the Volta skill, simulation pipeline, dashboard, tests, and helper tools.
@@ -68,7 +54,6 @@ Public demo docs:
 - [Hackathon plan](docs/HACKATHON.md)
 - [Demo script](docs/DEMO_SCRIPT.md)
 - [Demo artifact gallery](docs/DEMO_ARTIFACTS.md)
-- [Static demo dashboard](docs/demo-dashboard/index.html)
 - [Volta persona](docs/VOLTA_PERSONA.md)
 - [Agent context](docs/AGENT_CONTEXT.md)
 
@@ -187,8 +172,6 @@ Generated boards are starting points for engineering review, not production-appr
 docs/             Architecture, hackathon, and demo notes
 docs/demo_artifacts/
                 Curated demo images for GitHub browsing
-docs/demo-dashboard/
-                Static backend-free dashboard snapshot
 dashboard/       FastAPI dashboard and live artifact UI
 sim/             Simulation, netlist, PCB export, report, compare plots
 skills/volta/    Hermes Agent skill and references
@@ -222,14 +205,6 @@ Open:
 ```text
 http://localhost:8765
 ```
-
-Static dashboard snapshot for judges:
-
-```text
-docs/demo-dashboard/index.html
-```
-
-Open that file directly in a browser to inspect saved design history without running the backend.
 
 For a fresh install on another machine:
 
