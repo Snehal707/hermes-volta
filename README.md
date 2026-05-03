@@ -1,10 +1,15 @@
-# Hermes Volta ⚡️
+# Hermes Volta
 
-> "Speak a circuit. Get a PCB on Telegram."
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org)
+[![Hermes Agent](https://img.shields.io/badge/Hermes%20Agent-Nous%20Research-red.svg)](https://github.com/NousResearch/hermes-agent)
+[![Kimi K2.6](https://img.shields.io/badge/Kimi-K2.6-purple.svg)](https://kimi.moonshot.cn)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Built natively on **Hermes Agent + Kimi K2.6**. Uses **25 Hermes features**.
+Hermes Volta is an autonomous circuit design agent built natively on Hermes Agent by Nous Research. Powered by Kimi K2.6.
 
-**Hackathon submission — The Hermes Agent Creative Hackathon by Nous Research.**
+Say a circuit in plain English — by voice, text, or photo of a hand-drawn schematic — and Hermes Volta computes the components, runs a real PySpice/Ngspice simulation, generates KiCad artifacts and Gerbers, and delivers everything to your Telegram. The agent learns from every design, patches its own skill file, and gets measurably faster over time.
+
+Built for The Hermes Agent Creative Hackathon by Nous Research.
 
 ## Demo Video
 
@@ -49,40 +54,74 @@ Bottom: high-frequency noise blocked by filter
 
 ## Architecture
 
-Hermes Volta runs on top of Hermes Agent. Hermes Agent is the runtime/orchestrator; this repository contains the Volta skill, simulation pipeline, dashboard, tests, and helper tools.
+This repository packages the Volta skill, simulation and EDA pipeline (`sim/`), dashboard API (`dashboard/`), tests, and tooling. Hermes Agent is the orchestrator at runtime.
 
 ```mermaid
-flowchart LR
-    CLI[CLI prompt] --> HA[Hermes Agent runtime]
-    TG[Telegram voice / text / vision] --> HA
-    UI[Dashboard prompt] --> API[FastAPI dashboard API]
-    API --> HA
+flowchart TB
+  subgraph ctrl [Control layer]
+    CLI[Hermes CLI]
+    TG[Telegram voice text vision]
+    UID[Dashboard prompt]
+    API[FastAPI dashboard api.py]
+  end
 
-    HA --> KIMI[Kimi K2.6 model]
-    HA --> SKILL[Volta skill\nskills/volta/SKILL.md]
-    HA --> MEM[Memory + session search]
-    HA --> TOOLS[Hermes tools\nexecute_code, send_message,\ncron, background, rollback]
+  subgraph orch [Hermes Agent]
+    HA[Hermes Agent runtime]
+    KIMI[Kimi K2.6]
+    SKILL[Volta skill SKILL.md]
+    MEM[Memory and session search]
+    TOOLS["Tools execute_code send_message cron background rollback"]
+  end
 
-    SKILL --> PIPE[Faraday pipeline\nsim/faraday_pipeline.py]
-    TOOLS --> PIPE
-    MEM --> PIPE
+  subgraph pipe [Faraday pipeline]
+    FP[faraday_pipeline.py]
+    SIM[PySpice Ngspice simulate.py]
+    NET[KiCad netlist netlist.py]
+    PCBEX[KiCad CLI pcb_export.py]
+    RPT[report.py]
+  end
 
-    PIPE --> SIM[PySpice / Ngspice\nsim/simulate.py]
-    PIPE --> NET[SKiDL / KiCad netlist\nsim/netlist.py]
-    PIPE --> PCB[KiCad CLI export\nsim/pcb_export.py]
-    PIPE --> REPORT[Report + memory note\nsim/report.py]
+  subgraph out [Artifacts and delivery]
+    PLT[Plots and metrics]
+    EDA[EDA netlist PCB Gerbers]
+    DASH[Dashboard artifact panels]
+    TEL[Telegram delivery]
+    STORE[outputs directory]
+  end
 
-    SIM --> ART[Plots + actual cutoff]
-    NET --> ART
-    PCB --> ART
-    REPORT --> ART
+  CLI --> HA
+  TG --> HA
+  UID --> API
+  API --> HA
 
-    ART --> DASH[Dashboard artifact panels]
-    ART --> TELE[Telegram delivery]
-    ART --> OUT[outputs/]
+  HA --> KIMI
+  HA --> SKILL
+  HA --> MEM
+  HA --> TOOLS
+
+  SKILL --> FP
+  MEM --> FP
+  TOOLS --> FP
+
+  FP --> SIM
+  FP --> NET
+  FP --> PCBEX
+  FP --> RPT
+
+  SIM --> PLT
+  NET --> EDA
+  PCBEX --> EDA
+  RPT --> EDA
+
+  PLT --> DASH
+  EDA --> DASH
+  PLT --> STORE
+  EDA --> STORE
+  PLT --> TEL
+  EDA --> TEL
 ```
 
-That diagram summarizes the compact control/data flow; Hermes Agent exposes **skills, tools, memory, scheduling**, and **25+ features** exercised in Volta demos—see [**Hermes Agent Skills And Tools**](#hermes-agent-skills-and-tools) below.
+The diagram summarizes how control surfaces, Hermes/Kimi, and the Volta pipeline connect to inspectable outputs. For the feature-level breakdown, see [**Hermes Agent Skills And Tools**](#hermes-agent-skills-and-tools) below.
 
 More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
@@ -228,7 +267,7 @@ bash skills/volta/scripts/install_deps.sh
 python3 dashboard/api.py
 ```
 
-If imports fail outside the installer venv, use `./.venv/bin/python3 dashboard/api.py` instead of `python3`.
+If `python3` does not see packages after `install_deps.sh`, run the dashboard with the interpreter that script populated (for example `.venv/bin/python3`).
 
 Open:
 
