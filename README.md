@@ -79,6 +79,7 @@ flowchart TB
         NET["KiCad netlist\nsim/netlist.py"]
         PCBEXP["KiCad CLI export\nsim/pcb_export.py"]
         RPT["Report\nsim/report.py"]
+        CMP["Compare plot\nsim/compare_plot.py"]
     end
 
     subgraph deliver["Artifacts and Delivery"]
@@ -106,8 +107,10 @@ flowchart TB
     FP --> NET
     FP --> PCBEXP
     FP --> RPT
+    FP --> CMP
 
     SIM --> PLOTS
+    CMP --> PLOTS
     NET --> EDA
     PCBEXP --> EDA
 
@@ -120,6 +123,8 @@ flowchart TB
     EDA --> TGRAM
     EDA --> OUTDIR
 ```
+
+**Accuracy note:** [`sim/sweep_optimizer.py`](sim/sweep_optimizer.py) and [`sim/monte_carlo.py`](sim/monte_carlo.py) are separate CLIs the agent invokes through Hermes tooling; they are **not** called inside `faraday_pipeline.run()`. **`sim/compare_plot.py` is invoked at the end of `run()`** (after reports) so `compare_plot.png` lands with each design bundle.
 
 The diagram summarizes how control surfaces, Hermes/Kimi, and the Volta pipeline connect to inspectable outputs. For the feature-level breakdown, see [**Hermes Agent Skills And Tools**](#hermes-agent-skills-and-tools) below.
 

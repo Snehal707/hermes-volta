@@ -29,6 +29,7 @@ flowchart TB
         NET["KiCad netlist\nsim/netlist.py"]
         PCBEXP["KiCad CLI export\nsim/pcb_export.py"]
         RPT["Report\nsim/report.py"]
+        CMP["Compare plot\nsim/compare_plot.py"]
     end
 
     subgraph deliver["Artifacts and Delivery"]
@@ -56,8 +57,10 @@ flowchart TB
     FP --> NET
     FP --> PCBEXP
     FP --> RPT
+    FP --> CMP
 
     SIM --> PLOTS
+    CMP --> PLOTS
     NET --> EDA
     PCBEXP --> EDA
 
@@ -71,7 +74,7 @@ flowchart TB
     EDA --> OUTDIR
 ```
 
-`sim/sweep_optimizer.py`, `sim/monte_carlo.py`, and `sim/compare_plot.py` are auxiliary tools the agent invokes separately; **`faraday_pipeline.run()` does not chain them**. See [`sim/faraday_pipeline.py`](../sim/faraday_pipeline.py).
+`sim/sweep_optimizer.py` and `sim/monte_carlo.py` are separate CLI tools Hermes invokes through delegation / terminal—they are **not** called inside `faraday_pipeline.run()`. **`sim/compare_plot.generate_compare_plot` runs at the end of `run()`** (after the report writer) inside [`sim/faraday_pipeline.py`](../sim/faraday_pipeline.py); [`sim/compare_plot.py`](../sim/compare_plot.py) can also be used as its own CLI.
 
 ## Where Hermes Agent Lives
 
@@ -94,6 +97,9 @@ The public repo shows the Hermes Agent integration points instead:
 | `sim/netlist.py` | SKiDL-first KiCad netlist generation with manual fallback. |
 | `sim/pcb_export.py` | KiCad CLI PCB preview and Gerber export wrapper. |
 | `sim/report.py` | Cutoff report and memory-style design summary writer. |
+| `sim/compare_plot.py` | VIN/VOUT annotated comparison PNG; **`faraday_pipeline.run()` calls into this module**, and it exposes a standalone CLI |
+| `sim/sweep_optimizer.py` | Separate E24 sweep CLI—not invoked by `faraday_pipeline.run()` |
+| `sim/monte_carlo.py` | Separate tolerance Monte Carlo CLI—not invoked by `faraday_pipeline.run()` |
 | `dashboard/api.py` | FastAPI layer that streams design progress and serves generated artifacts. |
 | `tools/rl_trajectory.py` | Trajectory logging for learned design paths. |
 | `tests/smoke_test.py` | End-to-end smoke test for simulation, plots, Telegram, web search, reports, and exports. |
