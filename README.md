@@ -126,7 +126,7 @@ flowchart TB
 
 **Accuracy note:** [`sim/sweep_optimizer.py`](sim/sweep_optimizer.py) and [`sim/monte_carlo.py`](sim/monte_carlo.py) are separate CLIs the agent invokes through Hermes tooling; they are **not** called inside `faraday_pipeline.run()`. **`sim/compare_plot.py` is invoked at the end of `run()`** (after reports) so `compare_plot.png` lands with each design bundle.
 
-The diagram summarizes how control surfaces, Hermes/Kimi, and the Volta pipeline connect to inspectable outputs. For the feature-level breakdown, see [**Hermes Agent Skills And Tools**](#hermes-agent-skills-and-tools) below.
+The diagram summarizes how control surfaces, Hermes/Kimi, and the Volta pipeline connect to inspectable outputs. For the feature-level breakdown, see [**Skills And Tools**](#skills-and-tools) below.
 
 More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
@@ -161,7 +161,37 @@ The repo integrates with Hermes Agent through:
 - `sim/faraday_pipeline.py`, the main executable design pipeline
 - `dashboard/api.py`, which exposes the Volta pipeline through the dashboard/API
 
-## Hermes Agent Skills And Tools
+## Skills And Tools
+
+### Volta Custom Skill — skills/volta/SKILL.md
+
+The Volta skill is a custom Hermes skill that teaches the agent to design circuits. It defines:
+
+- Circuit topology selection (RC_LOWPASS, RC_HIGHPASS, RLC_BANDPASS, RLC_NOTCH)
+- E24 component value computation using verified filter math
+- PySpice/Ngspice simulation and cutoff validation
+- KiCad netlist, PCB, Gerber generation
+- 8-message Telegram delivery bundle
+- Learning loop — patches itself with verified recipes
+
+Reference files in `skills/volta/references/`:
+
+| File | Purpose |
+| --- | --- |
+| filter_math.md | RC and RLC filter equations |
+| component_recipes.md | Verified E24 component pairs |
+| kicad_footprints.md | JLCPCB 0402 footprint rules |
+| extended_docs.md | Extended design guidance |
+
+### Volta Custom Tools — tools/
+
+| Tool | Purpose |
+| --- | --- |
+| rl_trajectory.py | Records design trajectories for RL training |
+| submit_trajectory.py | Bundles and submits trajectories |
+| check_bom_prices.py | Checks live JLCPCB/LCSC component prices |
+| component_search.py | Searches components by value and footprint |
+| webhook.py | Webhook handler for external integrations |
 
 Hermes Volta is designed as a Hermes Agent capability showcase. The circuit pipeline is only one layer; the demo also exercises Hermes skills, memory, messaging, multimodal input, scheduling, background execution, and tool-driven engineering work.
 
@@ -169,8 +199,6 @@ Hermes Volta is designed as a Hermes Agent capability showcase. The circuit pipe
 
 | Skill / capability | What it does in Volta |
 | --- | --- |
-| Volta skill | `skills/volta/SKILL.md` defines the analog design workflow, safety rules, Telegram delivery gate, and learning behavior. |
-| Skill references | `filter_math.md`, `kicad_footprints.md`, `component_recipes.md`, and `extended_docs.md` give reusable circuit math, EDA guidance, and process rules. |
 | Skill growth | The agent updates skill/reference guidance when a design reveals a durable workflow improvement. |
 | Memory | Verified recipes are saved so future requests can reuse known-good component values and simulation results. |
 | Session search | Prior designs can be recalled and scaled, for example taking the most accurate design and retargeting it to 8 kHz. |
