@@ -57,77 +57,53 @@ Bottom: high-frequency noise blocked by filter
 This repository packages the Volta skill, simulation and EDA pipeline (`sim/`), dashboard API (`dashboard/`), tests, and tooling. Hermes Agent is the orchestrator at runtime.
 
 ```mermaid
-flowchart TD
-    subgraph Inputs
-        CLI[CLI prompts]
-        TEL[Telegram\ntext, voice, schematic photo]
+flowchart TB
+    subgraph Inputs["Control Layer"]
+        CLI[Hermes CLI]
+        TG[Telegram\nvoice, text, vision]
         DASH[Dashboard prompt]
     end
 
     subgraph Hermes["Hermes Agent Runtime"]
-        MODEL[Kimi K2.6]
-        SKILL[Volta skill\nskills/volta/SKILL.md]
-        REFS[Skill references\nfilter math, KiCad footprints,\ncomponent recipes]
-        MEMORY[Memory + session search]
-        TOOLS[Hermes tools\nexecute_code, send_message,\nweb search, cron,\nbackground, rollback]
+        KIMI[Kimi K2.6]
+        SKILL[Volta skill\nSKILL.md]
+        MEM[Memory + session search]
+        TOOLS[Tools: execute_code,\nsend_message, cron,\nbackground, rollback]
     end
 
-    subgraph Volta["Hermes Volta Repo"]
+    subgraph Pipeline["Faraday Pipeline"]
         PIPE[sim/faraday_pipeline.py]
-        SWEEP[sim/sweep_optimizer.py]
-        MC[sim/monte_carlo.py]
-        COMPARE[sim/compare_plot.py]
-        API[dashboard/api.py]
+        SIM[PySpice + Ngspice\nsim/simulate.py]
+        NET[KiCad netlist\nsim/netlist.py]
+        PCB[KiCad CLI export\nsim/pcb_export.py]
+        REPORT[sim/report.py]
     end
 
-    subgraph Simulation["Engineering Pipeline"]
-        SIM[PySpice + Ngspice\nAC and transient simulation]
-        NET[SKiDL/manual KiCad netlist]
-        PCB[KiCad CLI starter board,\npreview, Gerbers]
-        REPORT[cutoff_report.txt]
-    end
-
-    subgraph Artifacts
+    subgraph Artifacts["Artifacts and Delivery"]
         BODE[frequency_response.png]
         WAVE[waveform.png]
         EFFECT[compare_plot.png]
         BOARD[pcb_view.png]
         GERBERS[gerbers.zip]
-        TXT[cutoff_report.txt]
+        TELE[Telegram delivery]
+        DASH2[Dashboard panels]
     end
 
-    CLI --> Hermes
-    TEL --> Hermes
-    DASH --> API
-    API --> PIPE
-
-    MODEL --> SKILL
-    SKILL --> REFS
-    SKILL --> PIPE
-    MEMORY --> PIPE
-    TOOLS --> PIPE
-
+    Inputs --> Hermes
+    Hermes --> PIPE
     PIPE --> SIM
     PIPE --> NET
     PIPE --> PCB
     PIPE --> REPORT
-    PIPE --> SWEEP
-    PIPE --> MC
-    PIPE --> COMPARE
-
     SIM --> BODE
     SIM --> WAVE
-    COMPARE --> EFFECT
+    SIM --> EFFECT
     PCB --> BOARD
     PCB --> GERBERS
-    REPORT --> TXT
-
-    BODE --> DASH
-    WAVE --> DASH
-    EFFECT --> DASH
-    BOARD --> DASH
-    TXT --> TEL
-    GERBERS --> TEL
+    BODE --> TELE
+    BOARD --> TELE
+    BODE --> DASH2
+    BOARD --> DASH2
 ```
 
 The diagram summarizes how control surfaces, Hermes/Kimi, and the Volta pipeline connect to inspectable outputs. For the feature-level breakdown, see [**Hermes Agent Skills And Tools**](#hermes-agent-skills-and-tools) below.
